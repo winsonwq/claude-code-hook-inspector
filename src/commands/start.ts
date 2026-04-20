@@ -7,27 +7,27 @@ let server: InspectorServer | null = null
 
 // Hook name colors (using official event names)
 const hookColors: Record<string, (text: string) => string> = {
-  'PreToolUse': (t) => chalk.cyan(t),
-  'PostToolUse': (t) => chalk.green(t),
-  'PostToolUseFailure': (t) => chalk.red(t),
-  'UserPromptSubmit': (t) => chalk.yellow(t),
-  'SessionStart': (t) => chalk.blue(t),
-  'SessionEnd': (t) => chalk.blue(t),
-  'Notification': (t) => chalk.magenta(t),
-  'Stop': (t) => chalk.red(t),
-  'StopFailure': (t) => chalk.red(t),
-  'CwdChanged': (t) => chalk.cyan(t),
-  'FileChanged': (t) => chalk.green(t),
-  'ConfigChange': (t) => chalk.yellow(t),
-  'PermissionRequest': (t) => chalk.magenta(t),
-  'PermissionDenied': (t) => chalk.red(t),
-  'PreCompact': (t) => chalk.cyan(t),
-  'PostCompact': (t) => chalk.green(t)
+  'PreToolUse': (t) => chalk.cyan.bold(t),
+  'PostToolUse': (t) => chalk.green.bold(t),
+  'PostToolUseFailure': (t) => chalk.red.bold(t),
+  'UserPromptSubmit': (t) => chalk.yellow.bold(t),
+  'SessionStart': (t) => chalk.blue.bold(t),
+  'SessionEnd': (t) => chalk.blue.bold(t),
+  'Notification': (t) => chalk.magenta.bold(t),
+  'Stop': (t) => chalk.red.bold(t),
+  'StopFailure': (t) => chalk.red.bold(t),
+  'CwdChanged': (t) => chalk.cyan.bold(t),
+  'FileChanged': (t) => chalk.green.bold(t),
+  'ConfigChange': (t) => chalk.yellow.bold(t),
+  'PermissionRequest': (t) => chalk.magenta.bold(t),
+  'PermissionDenied': (t) => chalk.red.bold(t),
+  'PreCompact': (t) => chalk.cyan.bold(t),
+  'PostCompact': (t) => chalk.green.bold(t)
 }
 
 function getHookColorFn(hook: HookName): (text: string) => string {
   const officialName = HOOK_NAME_MAP[hook]
-  return hookColors[officialName] || ((t) => chalk.white(t))
+  return hookColors[officialName] || ((t) => chalk.white.bold(t))
 }
 
 function getOfficialHookName(hook: HookName): string {
@@ -84,7 +84,7 @@ export async function start(options: { interactive?: boolean }) {
         const time = new Date(event.timestamp).toLocaleTimeString()
 
         console.log()
-        console.log(colorFn.bold(`[${time}] ${getOfficialHookName(event.hook)}`))
+        console.log(colorFn(`[${time}] ${getOfficialHookName(event.hook)}`))
         console.log(chalk.gray('  payload:'))
         console.log(formatJson(event.payload).split('\n').map((l: string) => chalk.gray('    ') + l).join('\n'))
 
@@ -125,7 +125,7 @@ export async function start(options: { interactive?: boolean }) {
         const colorFn = getHookColorFn(event.hook)
         const time = new Date(event.timestamp).toLocaleTimeString()
 
-        console.log(colorFn.bold(`[${time}] ${getOfficialHookName(event.hook)}`))
+        console.log(colorFn(`[${time}] ${getOfficialHookName(event.hook)}`))
         console.log(chalk.gray('  payload:'))
         console.log(formatJson(event.payload).split('\n').map((l: string) => chalk.gray('    ') + l).join('\n'))
         console.log()
