@@ -50,7 +50,7 @@ jobs:
       - name: Update version from tag
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          npm pkg set version=$VERSION
+          jq ".version = \"$VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
 
       - name: Publish to npm
         run: npm publish --access public --registry=https://registry.npmjs.org
