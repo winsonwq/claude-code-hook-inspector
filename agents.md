@@ -52,6 +52,17 @@ Need to research Claude Code's expected return format for each hook. Current ass
 
 But we need to verify this with actual Claude Code behavior.
 
+## Release Process
+
+发布新版本到 npm 的正确流程：
+
+1. **更新 package.json 版本号**为目标版本
+2. **提交代码**：`git add package.json && git commit -m "release: v{x.y.z}"`
+3. **推送到 main**：`git push origin main`
+4. **创建并推送 tag**：`git tag v{x.y.z} && git push origin v{x.y.z}`
+
+CI 检测到 tag 推送后会自动：build → npm publish
+
 ## Open Questions
 
 1. Does Claude Code actually wait for hook return values?
