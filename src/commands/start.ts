@@ -8,8 +8,9 @@ chalk.level = 3
 
 let server: InspectorServer | null = null
 
-function colorizeHook(hook: HookName, text: string): string {
-  const officialName = HOOK_NAME_MAP[hook]
+function colorizeHook(hook: HookName | string, text: string): string {
+  // Handle both internal names (pre-tool) and official names (PreToolUse)
+  const officialName = HOOK_NAME_MAP[hook as HookName] || hook
   switch (officialName) {
     case 'PreToolUse': return chalk.cyan(text)
     case 'PostToolUse': return chalk.green(text)
@@ -27,12 +28,19 @@ function colorizeHook(hook: HookName, text: string): string {
     case 'PermissionDenied': return chalk.red(text)
     case 'PreCompact': return chalk.cyan(text)
     case 'PostCompact': return chalk.green(text)
+    case 'SubagentStop': return chalk.red(text)
+    case 'TeammateIdle': return chalk.cyan(text)
+    case 'TaskCreated': return chalk.green(text)
+    case 'TaskCompleted': return chalk.magenta(text)
+    case 'Elicitation': return chalk.yellow(text)
+    case 'ElicitationResult': return chalk.cyan(text)
     default: return chalk.white(text)
   }
 }
 
-function getOfficialHookName(hook: HookName): string {
-  return HOOK_NAME_MAP[hook] || hook
+function getOfficialHookName(hook: HookName | string): string {
+  // Handle both internal names and official names
+  return HOOK_NAME_MAP[hook as HookName] || hook
 }
 
 function formatJson(obj: unknown): string {
