@@ -60,8 +60,11 @@ jobs:
 
       - name: Publish to npm
         run: |
+          echo "NPM_TOKEN length: ${#NPM_TOKEN}"
+          echo "First 4 chars: ${NPM_TOKEN:0:4}"
           echo '//registry.npmjs.org/:_authToken='"${NPM_TOKEN}" > .npmrc
           cat .npmrc
+          npm whoami || true
           npm publish --access public 2>&1
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
