@@ -3,31 +3,32 @@ import { HOOK_NAME_MAP, HookName } from '../inspector/types.js'
 import chalk from 'chalk'
 import readline from 'readline'
 
+// Force enable colors (chalk auto-detection may fail in some terminals)
+chalk.level = 3
+
 let server: InspectorServer | null = null
 
-// Hook name colors (using official event names)
-const hookColors: Record<string, (text: string) => string> = {
-  'PreToolUse': (t) => chalk.cyan.bold(t),
-  'PostToolUse': (t) => chalk.green.bold(t),
-  'PostToolUseFailure': (t) => chalk.red.bold(t),
-  'UserPromptSubmit': (t) => chalk.yellow.bold(t),
-  'SessionStart': (t) => chalk.blue.bold(t),
-  'SessionEnd': (t) => chalk.blue.bold(t),
-  'Notification': (t) => chalk.magenta.bold(t),
-  'Stop': (t) => chalk.red.bold(t),
-  'StopFailure': (t) => chalk.red.bold(t),
-  'CwdChanged': (t) => chalk.cyan.bold(t),
-  'FileChanged': (t) => chalk.green.bold(t),
-  'ConfigChange': (t) => chalk.yellow.bold(t),
-  'PermissionRequest': (t) => chalk.magenta.bold(t),
-  'PermissionDenied': (t) => chalk.red.bold(t),
-  'PreCompact': (t) => chalk.cyan.bold(t),
-  'PostCompact': (t) => chalk.green.bold(t)
-}
-
-function getHookColorFn(hook: HookName): (text: string) => string {
+function colorizeHook(hook: HookName, text: string): string {
   const officialName = HOOK_NAME_MAP[hook]
-  return hookColors[officialName] || ((t) => chalk.white.bold(t))
+  switch (officialName) {
+    case 'PreToolUse': return chalk.cyan(text)
+    case 'PostToolUse': return chalk.green(text)
+    case 'PostToolUseFailure': return chalk.red(text)
+    case 'UserPromptSubmit': return chalk.yellow(text)
+    case 'SessionStart': return chalk.blue(text)
+    case 'SessionEnd': return chalk.blue(text)
+    case 'Notification': return chalk.magenta(text)
+    case 'Stop': return chalk.red(text)
+    case 'StopFailure': return chalk.red(text)
+    case 'CwdChanged': return chalk.cyan(text)
+    case 'FileChanged': return chalk.green(text)
+    case 'ConfigChange': return chalk.yellow(text)
+    case 'PermissionRequest': return chalk.magenta(text)
+    case 'PermissionDenied': return chalk.red(text)
+    case 'PreCompact': return chalk.cyan(text)
+    case 'PostCompact': return chalk.green(text)
+    default: return chalk.white(text)
+  }
 }
 
 function getOfficialHookName(hook: HookName): string {
@@ -80,11 +81,10 @@ export async function start(options: { interactive?: boolean }) {
 
     if (interactive) {
       dispatcher.setInputCallback(async (event) => {
-        const colorFn = getHookColorFn(event.hook)
         const time = new Date(event.timestamp).toLocaleTimeString()
 
         console.log()
-        console.log(colorFn(`[${time}] ${getOfficialHookName(event.hook)}`))
+        console.log(colorizeHook(event.hook, `[${time}] ${getOfficialHookName(event.hook)}`))
         console.log(chalk.gray('  payload:'))
         console.log(formatJson(event.payload).split('\n').map((l: string) => chalk.gray('    ') + l).join('\n'))
 
@@ -122,10 +122,9 @@ export async function start(options: { interactive?: boolean }) {
       })
     } else {
       dispatcher.onEvent((event) => {
-        const colorFn = getHookColorFn(event.hook)
         const time = new Date(event.timestamp).toLocaleTimeString()
 
-        console.log(colorFn(`[${time}] ${getOfficialHookName(event.hook)}`))
+        console.log(colorizeHook(event.hook, `[${time}] ${getOfficialHookName(event.hook)}`))
         console.log(chalk.gray('  payload:'))
         console.log(formatJson(event.payload).split('\n').map((l: string) => chalk.gray('    ') + l).join('\n'))
         console.log()
