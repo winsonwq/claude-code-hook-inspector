@@ -17,6 +17,12 @@ export type HookName =
   | 'permission-denied'
   | 'pre-compact'
   | 'post-compact'
+  | 'subagent-stop'
+  | 'teammate-idle'
+  | 'task-created'
+  | 'task-completed'
+  | 'elicitation'
+  | 'elicitation-result'
 
 // Internal name to official Claude Code event name mapping
 export const HOOK_NAME_MAP: Record<HookName, string> = {
@@ -35,7 +41,13 @@ export const HOOK_NAME_MAP: Record<HookName, string> = {
   'permission-request': 'PermissionRequest',
   'permission-denied': 'PermissionDenied',
   'pre-compact': 'PreCompact',
-  'post-compact': 'PostCompact'
+  'post-compact': 'PostCompact',
+  'subagent-stop': 'SubagentStop',
+  'teammate-idle': 'TeammateIdle',
+  'task-created': 'TaskCreated',
+  'task-completed': 'TaskCompleted',
+  'elicitation': 'Elicitation',
+  'elicitation-result': 'ElicitationResult'
 }
 
 export interface HookPayload {
