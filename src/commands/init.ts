@@ -29,7 +29,7 @@ export async function init() {
   const hooksPath = resolveHooksPath()
 
   // Load existing settings
-  let settings: { hooks?: Record<string, string> } = {}
+  let settings: { hooks?: Record<string, unknown[]> } = {}
   try {
     if (fs.existsSync(SETTINGS_PATH)) {
       settings = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf-8'))
@@ -45,82 +45,32 @@ export async function init() {
     console.log(chalk.gray(`Backed up settings to ${backupPath}`))
   }
 
-  // Install hooks in Claude Code compatible format
-  // Create correct hook configuration based on Claude Code documentation
-  const hooksConfig = {
-    PreToolUse: [
-      {
-        matcher: "",
-        hooks: [
-          {
-            type: "command",
-            command: `node "${hooksPath}"`,
-            description: INSPECTOR_HOOK_MARKER
-          }
-        ]
-      }
-    ],
-    PostToolUse: [
-      {
-        matcher: "",
-        hooks: [
-          {
-            type: "command",
-            command: `node "${hooksPath}"`,
-            description: INSPECTOR_HOOK_MARKER
-          }
-        ]
-      }
-    ],
-    PostToolUseFailure: [
-      {
-        matcher: "",
-        hooks: [
-          {
-            type: "command",
-            command: `node "${hooksPath}"`,
-            description: INSPECTOR_HOOK_MARKER
-          }
-        ]
-      }
-    ],
-    SessionStart: [
-      {
-        matcher: "",
-        hooks: [
-          {
-            type: "command",
-            command: `node "${hooksPath}"`,
-            description: INSPECTOR_HOOK_MARKER
-          }
-        ]
-      }
-    ],
-    SessionEnd: [
-      {
-        matcher: "",
-        hooks: [
-          {
-            type: "command",
-            command: `node "${hooksPath}"`,
-            description: INSPECTOR_HOOK_MARKER
-          }
-        ]
-      }
-    ],
-    UserPromptSubmit: [
-      {
-        matcher: "",
-        hooks: [
-          {
-            type: "command",
-            command: `node "${hooksPath}"`,
-            description: INSPECTOR_HOOK_MARKER
-          }
-        ]
-      }
-    ],
-    Stop: [
+  // All Claude Code hook events
+  const allHooks = [
+    'PreToolUse',
+    'PostToolUse',
+    'PostToolUseFailure',
+    'UserPromptSubmit',
+    'SessionStart',
+    'SessionEnd',
+    'Stop',
+    'StopFailure',
+    'Notification',
+    'CwdChanged',
+    'FileChanged',
+    'ConfigChange',
+    'PermissionRequest',
+    'PermissionDenied',
+    'PreCompact',
+    'PostCompact',
+    'Elicitation',
+    'ElicitationResult'
+  ]
+
+  // Build hooks config for all hook events
+  const hooksConfig: Record<string, unknown[]> = {}
+  for (const hook of allHooks) {
+    hooksConfig[hook] = [
       {
         matcher: "",
         hooks: [
