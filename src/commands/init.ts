@@ -6,13 +6,21 @@ import { fileURLToPath } from 'url'
 const SETTINGS_PATH = path.join(process.env.HOME || '/tmp', '.claude', 'settings.json')
 const INSPECTOR_HOOK_MARKER = 'cchi-inspector'
 
-// Resolve the hooks path - in production it will be in node_modules
-// In development it's relative to this file
+// Resolve the hooks path - in production it's in dist/hooks.js
+// The CLI entry point is bin/cli.js but hooks should run dist/hooks.js directly
 function resolveHooksPath(): string {
-  // hooks.js is in dist/, so the command should just be 'node /path/to/dist/hooks.js'
-  // When called, process.argv[1] is the path to hooks.js itself
-  // We just need to return that path directly
-  return process.argv[1]
+  // process.argv[1] is the CLI entry point (bin/cli.js)
+  // This may be a symlink, so resolve it first to find the actual package location
+  const cliPath = process.argv[1]
+  if (!cliPath) {
+    throw new Error('Could not determine CLI path')
+  }
+  // Resolve symlinks to get the real path to the package
+  const realCliPath = fs.realpathSync(cliPath)
+  const cliDir = path.dirname(realCliPath)
+  // dist/ is sibling to bin/, so go up and into dist
+  const hooksPath = path.resolve(cliDir, '..', 'dist', 'hooks.js')
+  return hooksPath
 }
 
 export async function init() {

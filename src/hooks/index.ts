@@ -5,26 +5,6 @@
 import { sendHookEvent, isConnected } from './ipc.js'
 import process from 'process'
 
-// Map Claude Code standard hook events to our internal names
-const HOOK_NAME_MAP: Record<string, string> = {
-  'PreToolUse': 'pre-tool',
-  'PostToolUse': 'post-tool',
-  'PostToolUseFailure': 'on-tool-error',
-  'UserPromptSubmit': 'user-prompt',
-  'SessionStart': 'session-start',
-  'SessionEnd': 'session-end',
-  'Notification': 'notification',
-  'Stop': 'stop',
-  'StopFailure': 'stop-failure',
-  'CwdChanged': 'cwd-changed',
-  'FileChanged': 'file-changed',
-  'ConfigChange': 'config-change',
-  'PermissionRequest': 'permission-request',
-  'PermissionDenied': 'permission-denied',
-  'PreCompact': 'pre-compact',
-  'PostCompact': 'post-compact'
-}
-
 // Get session ID from input JSON
 function getSessionId(input: Record<string, unknown>): string {
   return input.session_id as string ||
@@ -90,7 +70,7 @@ export async function claudeCodeHookHandler(): Promise<void> {
     const HOOKS_WITH_SCHEMA_OUTPUT = ['PreToolUse', 'UserPromptSubmit', 'PostToolUse']
 
     // Map to internal hook name
-    const internalHookName = HOOK_NAME_MAP[hookEventName] || hookEventName.toLowerCase()
+    const internalHookName = hookEventName
 
     // Extract payload
     const payload = extractPayload(hookEventName, input)
