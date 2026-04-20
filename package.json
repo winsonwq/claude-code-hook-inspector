@@ -1,6 +1,6 @@
 {
   "name": "claude-code-hook-inspector",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "CCHI - Monitor and debug Claude Code hooks with an interactive CLI",
   "type": "module",
   "bin": {

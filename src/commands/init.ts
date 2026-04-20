@@ -9,14 +9,10 @@ const INSPECTOR_HOOK_MARKER = 'cchi-inspector'
 // Resolve the hooks path - in production it will be in node_modules
 // In development it's relative to this file
 function resolveHooksPath(): string {
-  // Check if we're in node_modules (production)
-  const nodeModulesPath = path.resolve(process.argv[1], '../../dist/hooks.js')
-  if (fs.existsSync(nodeModulesPath)) {
-    return nodeModulesPath
-  }
-
-  // Development path
-  return path.resolve(process.argv[1], '../../dist/hooks.js')
+  // hooks.js is in dist/, so the command should just be 'node /path/to/dist/hooks.js'
+  // When called, process.argv[1] is the path to hooks.js itself
+  // We just need to return that path directly
+  return process.argv[1]
 }
 
 export async function init() {
