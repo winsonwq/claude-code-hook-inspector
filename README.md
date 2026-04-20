@@ -1,6 +1,6 @@
 # CCHI - Claude Code Hook Inspector
 
-Monitor and debug Claude Code hooks with an interactive TUI.
+Monitor and debug Claude Code hooks with an interactive CLI.
 
 ## Installation
 
@@ -28,13 +28,33 @@ cchi start --interactive
 When running in monitor mode, all Claude Code hook events are captured and displayed in real-time:
 
 ```
-[10:30:15] pre-tool (session: abc123...)
-  payload: {"toolName":"Read","input":{"filePath":"/Users/..."}}
+[10:30:15] pre-tool
+  payload:
+    {
+      "hookEventName": "PreToolUse",
+      "sessionId": "abc123",
+      "toolName": "Bash",
+      "toolInput": {
+        "command": "npm test"
+      }
+    }
 ```
 
 ### Interactive Mode
 
-In interactive mode, you can inject custom return values into hooks to influence Claude Code's behavior. Only hooks that can control behavior will prompt for input.
+In interactive mode, you can inject custom return values into hooks to influence Claude Code's behavior. Only hooks that can control behavior will prompt for input. Other hooks display info and return null automatically.
+
+```
+[10:30:15] pre-tool
+  payload:
+    {
+      "hookEventName": "PreToolUse",
+      "sessionId": "abc123",
+      "toolName": "Bash"
+    }
+
+  > enter return value (JSON or Enter for null): {"permissionDecision": "allow"}
+```
 
 ## Hooks Reference
 
