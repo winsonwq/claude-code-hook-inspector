@@ -18,6 +18,26 @@ export type HookName =
   | 'pre-compact'
   | 'post-compact'
 
+// Internal name to official Claude Code event name mapping
+export const HOOK_NAME_MAP: Record<HookName, string> = {
+  'pre-tool': 'PreToolUse',
+  'post-tool': 'PostToolUse',
+  'on-tool-error': 'PostToolUseFailure',
+  'user-prompt': 'UserPromptSubmit',
+  'session-start': 'SessionStart',
+  'session-end': 'SessionEnd',
+  'notification': 'Notification',
+  'stop': 'Stop',
+  'stop-failure': 'StopFailure',
+  'cwd-changed': 'CwdChanged',
+  'file-changed': 'FileChanged',
+  'config-change': 'ConfigChange',
+  'permission-request': 'PermissionRequest',
+  'permission-denied': 'PermissionDenied',
+  'pre-compact': 'PreCompact',
+  'post-compact': 'PostCompact'
+}
+
 export interface HookPayload {
   [key: string]: unknown
 }

@@ -1,33 +1,37 @@
 import { InspectorServer } from '../inspector/server.js'
+import { HOOK_NAME_MAP, HookName } from '../inspector/types.js'
 import chalk from 'chalk'
 import readline from 'readline'
 
 let server: InspectorServer | null = null
 
-// Hook name colors
-const HOOK_COLORS: Record<string, string> = 'cyan'
-
-const hookColors: Record<string, string> = {
-  'pre-tool': 'cyan',
-  'post-tool': 'green',
-  'on-tool-error': 'red',
-  'user-prompt': 'yellow',
-  'session-start': 'blue',
-  'session-end': 'blue',
-  'notification': 'magenta',
-  'stop': 'red',
-  'stop-failure': 'red',
-  'cwd-changed': 'cyan',
-  'file-changed': 'green',
-  'config-change': 'yellow',
-  'permission-request': 'magenta',
-  'permission-denied': 'red',
-  'pre-compact': 'cyan',
-  'post-compact': 'green'
+// Hook name colors (using official event names)
+const hookColors: Record<string, (text: string) => string> = {
+  'PreToolUse': (t) => chalk.cyan(t),
+  'PostToolUse': (t) => chalk.green(t),
+  'PostToolUseFailure': (t) => chalk.red(t),
+  'UserPromptSubmit': (t) => chalk.yellow(t),
+  'SessionStart': (t) => chalk.blue(t),
+  'SessionEnd': (t) => chalk.blue(t),
+  'Notification': (t) => chalk.magenta(t),
+  'Stop': (t) => chalk.red(t),
+  'StopFailure': (t) => chalk.red(t),
+  'CwdChanged': (t) => chalk.cyan(t),
+  'FileChanged': (t) => chalk.green(t),
+  'ConfigChange': (t) => chalk.yellow(t),
+  'PermissionRequest': (t) => chalk.magenta(t),
+  'PermissionDenied': (t) => chalk.red(t),
+  'PreCompact': (t) => chalk.cyan(t),
+  'PostCompact': (t) => chalk.green(t)
 }
 
-function getHookColor(hook: string): string {
-  return hookColors[hook] || 'white'
+function getHookColorFn(hook: HookName): (text: string) => string {
+  const officialName = HOOK_NAME_MAP[hook]
+  return hookColors[officialName] || ((t) => chalk.white(t))
+}
+
+function getOfficialHookName(hook: HookName): string {
+  return HOOK_NAME_MAP[hook] || hook
 }
 
 function formatJson(obj: unknown): string {
@@ -57,28 +61,30 @@ export async function start(options: { interactive?: boolean }) {
     // Hooks that can control behavior and may need input
     // Based on Claude Code hooks docs
     const hooksWithDecision = new Set([
-      'pre-tool',           // Can block/modify tool call
-      'permission-request', // Can allow/deny
-      'user-prompt',       // Can block prompt
-      'stop',              // Can block stop
-      'config-change',      // Can block config change
-      'permission-denied', // Can return retry: true
-      'pre-compact',       // Can block compaction
-      'subagent-stop',     // Can block subagent stop
-      'teammate-idle',     // Can block teammate idle
-      'task-created',      // Can block task creation
-      'task-completed',    // Can block task completion
-      'elicitation',       // Can deny elicitation
-      'elicitation-result' // Can block elicitation result
+      'pre-tool',            // Can block/modify tool call (PreToolUse)
+      'post-tool',           // Can return result (PostToolUse)
+      'on-tool-error',       // Can return additionalContext (PostToolUseFailure)
+      'user-prompt',         // Can block prompt (UserPromptSubmit)
+      'permission-request',  // Can allow/deny
+      'stop',                // Can block stop
+      'config-change',       // Can block config change
+      'permission-denied',   // Can return retry: true
+      'pre-compact',         // Can block compaction
+      'subagent-stop',       // Can block subagent stop
+      'teammate-idle',       // Can block teammate idle
+      'task-created',        // Can block task creation
+      'task-completed',      // Can block task completion
+      'elicitation',         // Can deny elicitation
+      'elicitation-result'   // Can block elicitation result
     ])
 
     if (interactive) {
       dispatcher.setInputCallback(async (event) => {
-        const color = getHookColor(event.hook)
+        const colorFn = getHookColorFn(event.hook)
         const time = new Date(event.timestamp).toLocaleTimeString()
 
         console.log()
-        console.log(chalk[color].bold(`[${time}] ${event.hook}`))
+        console.log(colorFn.bold(`[${time}] ${getOfficialHookName(event.hook)}`))
         console.log(chalk.gray('  payload:'))
         console.log(formatJson(event.payload).split('\n').map((l: string) => chalk.gray('    ') + l).join('\n'))
 
@@ -116,10 +122,10 @@ export async function start(options: { interactive?: boolean }) {
       })
     } else {
       dispatcher.onEvent((event) => {
-        const color = getHookColor(event.hook)
+        const colorFn = getHookColorFn(event.hook)
         const time = new Date(event.timestamp).toLocaleTimeString()
 
-        console.log(chalk[color].bold(`[${time}] ${event.hook}`))
+        console.log(colorFn.bold(`[${time}] ${getOfficialHookName(event.hook)}`))
         console.log(chalk.gray('  payload:'))
         console.log(formatJson(event.payload).split('\n').map((l: string) => chalk.gray('    ') + l).join('\n'))
         console.log()
