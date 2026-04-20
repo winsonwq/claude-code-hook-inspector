@@ -1,0 +1,5 @@
+{
+  "hook_event_name": "SessionEnd",
+  "session_id": "test_session_123",
+  "cwd": "/Users/test/project"
+}

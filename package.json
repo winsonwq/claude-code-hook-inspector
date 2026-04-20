@@ -1,0 +1,40 @@
+{
+  "name": "claude-code-hook-inspector",
+  "version": "0.1.0",
+  "description": "Monitor and debug Claude Code hooks with an interactive TUI",
+  "type": "module",
+  "bin": {
+    "cchi": "./bin/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
+    "postinstall": "node scripts/postinstall.cjs"
+  },
+  "keywords": [
+    "claude-code",
+    "hook",
+    "inspector",
+    "debugger",
+    "tui"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "ink": "^4.4.1",
+    "react": "^18.2.0",
+    "pino": "^8.17.0",
+    "pino-pretty": "^10.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
