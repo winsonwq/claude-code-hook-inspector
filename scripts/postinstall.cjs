@@ -24,5 +24,5 @@ try {
   console.log('✅ Hooks installed successfully')
 } catch (e) {
   console.log('⚠️ Could not auto-initialize. Run `cchi init` manually to install hooks.')
-  console.log('   After running: npm install -g cchi')
+  console.log('   After running: npm install -g claude-code-hook-inspector')
 }

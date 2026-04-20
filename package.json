@@ -1,5 +1,5 @@
 {
-  "name": "cchi",
+  "name": "claude-code-hook-inspector",
   "version": "0.1.0",
   "description": "CCHI - Monitor and debug Claude Code hooks with an interactive TUI",
   "type": "module",

@@ -5,7 +5,7 @@ Monitor and debug Claude Code hooks with an interactive TUI.
 ## Installation
 
 ```bash
-npm install -g cchi
+npm install -g claude-code-hook-inspector
 ```
 
 ## Quick Start
