@@ -5,7 +5,6 @@ import {
   LoggedEvent,
   SessionLog
 } from './types.js'
-import pino from 'pino'
 import fs from 'fs'
 import path from 'path'
 
@@ -17,30 +16,12 @@ export class HookDispatcher {
   private pendingResponses: Map<string, (value: unknown) => void> = new Map()
   private eventQueue: HookEvent[] = []
   private interactive: boolean = false
-  private logger: pino.Logger
 
   private onEventCallback?: (event: HookEvent) => void
   private onWaitForInputCallback?: (event: HookEvent) => Promise<unknown>
 
   constructor(interactive: boolean = false) {
     this.interactive = interactive
-    this.logger = pino({
-      level: 'info',
-      transport: {
-        targets: [
-          {
-            target: 'pino-pretty',
-            options: { colorize: true },
-            level: 'info'
-          },
-          {
-            target: 'pino/file',
-            options: { destination: 1 }, // stdout
-            level: 'info'
-          }
-        ]
-      }
-    })
 
     // Ensure log directory exists
     if (!fs.existsSync(LOG_DIR)) {
@@ -50,7 +31,6 @@ export class HookDispatcher {
 
   setInteractive(interactive: boolean) {
     this.interactive = interactive
-    this.logger.info({ interactive }, 'Interactive mode changed')
   }
 
   onEvent(callback: (event: HookEvent) => void) {
@@ -69,8 +49,6 @@ export class HookDispatcher {
   }
 
   async handleMessage(message: IPCMessage): Promise<IPCMessage | null> {
-    this.logger.debug({ message }, 'Received message')
-
     switch (message.type) {
       case 'hook_event':
         return this.handleHookEvent(message)
@@ -104,8 +82,6 @@ export class HookDispatcher {
     let returnValue: unknown = null
 
     if (this.interactive) {
-      // Wait for user input in interactive mode
-      this.logger.info({ hook: event.hook, sessionId: event.sessionId }, 'Waiting for user input')
       returnValue = await this.waitForInput(event)
       loggedEvent.returnValue = returnValue
     }
@@ -120,12 +96,6 @@ export class HookDispatcher {
     if (this.onEventCallback) {
       this.onEventCallback(event)
     }
-
-    this.logger.info({
-      hook: event.hook,
-      sessionId: event.sessionId,
-      hasReturnValue: returnValue !== null
-    }, 'Hook event processed')
 
     return {
       type: 'hook_response',
@@ -171,7 +141,6 @@ export class HookDispatcher {
     const toDelete = files.slice(keepCount)
     for (const file of toDelete) {
       fs.unlinkSync(file.path)
-      this.logger.info({ file: file.name }, 'Deleted old session log')
     }
   }
 }

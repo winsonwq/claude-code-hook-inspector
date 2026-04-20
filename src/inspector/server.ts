@@ -2,7 +2,6 @@ import net from 'net'
 import fs from 'fs'
 import { IPCMessage, InspectorConfig } from './types.js'
 import { HookDispatcher } from './dispatcher.js'
-import pino from 'pino'
 
 const SOCKET_PATH = '/tmp/cchi-inspector.sock'
 
@@ -10,14 +9,12 @@ export class InspectorServer {
   private server: net.Server
   private dispatcher: HookDispatcher
   private clients: Set<net.Socket> = new Set()
-  private logger: pino.Logger
   private interactive: boolean
   private config: InspectorConfig
 
   constructor(interactive: boolean = false) {
     this.interactive = interactive
     this.dispatcher = new HookDispatcher(interactive)
-    this.logger = pino({ name: 'inspector-server' })
 
     this.config = {
       socketPath: SOCKET_PATH,
@@ -30,7 +27,7 @@ export class InspectorServer {
     })
 
     this.server.on('error', (err) => {
-      this.logger.error({ err }, 'Server error')
+      console.error('Server error:', err)
     })
   }
 
@@ -42,8 +39,6 @@ export class InspectorServer {
   private handleClient(socket: net.Socket) {
     this.clients.add(socket)
     let buffer = ''
-
-    this.logger.info({ remoteAddress: socket.remoteAddress }, 'Client connected')
 
     socket.on('data', async (data) => {
       buffer += data.toString()
@@ -62,19 +57,18 @@ export class InspectorServer {
             socket.write(JSON.stringify(response) + '\n')
           }
         } catch (err) {
-          this.logger.error({ err, line }, 'Failed to parse message')
+          console.error('Failed to parse message:', err)
         }
       }
     })
 
     socket.on('end', () => {
       this.clients.delete(socket)
-      this.logger.info({ remoteAddress: socket.remoteAddress }, 'Client disconnected')
     })
 
     socket.on('error', (err) => {
       this.clients.delete(socket)
-      this.logger.error({ err }, 'Socket error')
+      console.error('Socket error:', err)
     })
   }
 
@@ -90,7 +84,6 @@ export class InspectorServer {
 
     return new Promise((resolve, reject) => {
       this.server.listen(SOCKET_PATH, () => {
-        this.logger.info({ socketPath: SOCKET_PATH }, 'Inspector server started')
         resolve()
       })
 
@@ -124,7 +117,6 @@ export class InspectorServer {
       this.clients.clear()
 
       this.server.close(() => {
-        this.logger.info('Inspector server stopped')
         resolve()
       })
     })
