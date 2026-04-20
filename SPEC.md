@@ -1,11 +1,11 @@
-# Claude Code Hook Inspector
+# CCHI - Claude Code Hook Inspector
 
 ## 概述
 
 一个 TypeScript NPM 工具，用于监控和调试 Claude Code 的 hooks。
 
 **项目名**：`claude-code-hook-inspector`
-**npm 包名**：`claude-code-hook-inspector`
+**npm 包名**：`cchi`
 **CLI 命令**：`cchi`
 
 **核心问题待验证**：Claude Code hooks 是同步等待返回值，还是 fire-and-forget？

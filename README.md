@@ -1,11 +1,11 @@
-# Claude Code Hook Inspector
+# CCHI - Claude Code Hook Inspector
 
 Monitor and debug Claude Code hooks with an interactive TUI.
 
 ## Installation
 
 ```bash
-npm install -g claude-code-hook-inspector
+npm install -g cchi
 ```
 
 ## Quick Start
