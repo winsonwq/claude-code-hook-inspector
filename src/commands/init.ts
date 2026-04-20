@@ -45,7 +45,7 @@ export async function init() {
     console.log(chalk.gray(`Backed up settings to ${backupPath}`))
   }
 
-  // All Claude Code hook events
+  // All Claude Code hook events (26 total)
   const allHooks = [
     'PreToolUse',
     'PostToolUse',
@@ -64,7 +64,15 @@ export async function init() {
     'PreCompact',
     'PostCompact',
     'Elicitation',
-    'ElicitationResult'
+    'ElicitationResult',
+    'SubagentStart',
+    'SubagentStop',
+    'TaskCreated',
+    'TaskCompleted',
+    'TeammateIdle',
+    'InstructionsLoaded',
+    'WorktreeCreate',
+    'WorktreeRemove'
   ]
 
   // Build hooks config for all hook events
