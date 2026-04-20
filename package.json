@@ -10,7 +10,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist/",
-    "bin/"
+    "bin/",
+    "scripts/"
   ],
   "scripts": {
     "build": "tsup",
