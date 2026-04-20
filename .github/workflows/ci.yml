@@ -54,7 +54,14 @@ jobs:
           jq ".version = \"$VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
           cat package.json | jq '.version'
 
+      - name: Verify package exists
+        run: |
+          echo "Checking if package exists..."
+          curl -s -u "node:${NPM_TOKEN}@npm" https://registry.npmjs.org/-/package/claude-code-hook-inspector/dist-tags 2>&1 || true
+
       - name: Publish to npm
-        run: npm publish --access public --registry=https://registry.npmjs.org
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npm publish --access public --registry=https://registry.npmjs.org
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
