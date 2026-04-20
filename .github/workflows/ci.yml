@@ -47,6 +47,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Update version from tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          npm version $VERSION --no-git-tag-version
+
       - name: Publish to npm
         run: npm publish --access public --registry=https://registry.npmjs.org
         env:
