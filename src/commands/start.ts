@@ -59,24 +59,24 @@ export async function start(options: { interactive?: boolean }) {
 
     const dispatcher = server.getDispatcher()
 
-    // Hooks that can control behavior and may need input
+    // Hooks that can control behavior and may need input (using official names)
     // Based on Claude Code hooks docs
     const hooksWithDecision = new Set([
-      'pre-tool',            // Can block/modify tool call (PreToolUse)
-      'post-tool',           // Can return result (PostToolUse)
-      'on-tool-error',       // Can return additionalContext (PostToolUseFailure)
-      'user-prompt',         // Can block prompt (UserPromptSubmit)
-      'permission-request',  // Can allow/deny
-      'stop',                // Can block stop
-      'config-change',       // Can block config change
-      'permission-denied',   // Can return retry: true
-      'pre-compact',         // Can block compaction
-      'subagent-stop',       // Can block subagent stop
-      'teammate-idle',       // Can block teammate idle
-      'task-created',        // Can block task creation
-      'task-completed',      // Can block task completion
-      'elicitation',         // Can deny elicitation
-      'elicitation-result'   // Can block elicitation result
+      'PreToolUse',           // Can block/modify tool call
+      'PostToolUse',          // Can return result
+      'PostToolUseFailure',   // Can return additionalContext
+      'UserPromptSubmit',     // Can block prompt
+      'PermissionRequest',     // Can allow/deny
+      'Stop',                 // Can block stop
+      'ConfigChange',         // Can block config change
+      'PermissionDenied',     // Can return retry: true
+      'PreCompact',           // Can block compaction
+      'SubagentStop',         // Can block subagent stop
+      'TeammateIdle',         // Can block teammate idle
+      'TaskCreated',          // Can block task creation
+      'TaskCompleted',        // Can block task completion
+      'Elicitation',          // Can deny elicitation
+      'ElicitationResult'     // Can block elicitation result
     ])
 
     if (interactive) {
