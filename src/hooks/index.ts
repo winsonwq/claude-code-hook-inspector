@@ -65,9 +65,27 @@ export async function claudeCodeHookHandler(): Promise<void> {
       process.exit(0)
     }
 
-    // Hooks that have a schema-defined hookSpecificOutput structure
-    // Only these 3 events accept hookSpecificOutput with hookEventName per Claude Code's validation schema
-    const HOOKS_WITH_SCHEMA_OUTPUT = ['PreToolUse', 'UserPromptSubmit', 'PostToolUse']
+    // Hooks that require hookSpecificOutput structure
+    // Based on Claude Code hooks docs
+    const HOOKS_WITH_HOOK_SPECIFIC_OUTPUT = [
+      'PreToolUse',         // permissionDecision, updatedInput, additionalContext
+      'PermissionRequest',   // decision.behavior, updatedInput, updatedPermissions
+      'PermissionDenied',    // retry
+      'Elicitation',        // action, content
+      'ElicitationResult'   // action, content
+    ]
+
+    // Hooks that use top-level decision field
+    // Based on Claude Code hooks docs
+    const HOOKS_WITH_TOP_DECISION = [
+      'UserPromptSubmit',    // decision: "block"
+      'PostToolUse',        // decision: "block"
+      'PostToolUseFailure', // additionalContext
+      'Stop',               // decision: "block"
+      'SubagentStop',       // decision: "block"
+      'ConfigChange',       // decision: "block"
+      'PreCompact'          // decision: "block"
+    ]
 
     // Map to internal hook name
     const internalHookName = hookEventName
@@ -81,17 +99,22 @@ export async function claudeCodeHookHandler(): Promise<void> {
 
     // Return response to Claude Code
     if (returnValue !== undefined && returnValue !== null) {
-      // If we have a return value from inspector, include it
-      if (HOOKS_WITH_SCHEMA_OUTPUT.includes(hookEventName)) {
+      // If we have a return value from inspector
+      if (HOOKS_WITH_HOOK_SPECIFIC_OUTPUT.includes(hookEventName)) {
+        // Wrap in hookSpecificOutput structure
         console.log(JSON.stringify({ hookSpecificOutput: { hookEventName, ...returnValue } }))
       } else {
+        // Output return value directly (for top-level decision hooks)
         console.log(JSON.stringify(returnValue))
       }
-    } else if (HOOKS_WITH_SCHEMA_OUTPUT.includes(hookEventName)) {
-      // For hooks that expect hookSpecificOutput structure
+    } else if (HOOKS_WITH_HOOK_SPECIFIC_OUTPUT.includes(hookEventName)) {
+      // For hooks that expect hookSpecificOutput structure, send minimal output
       console.log(JSON.stringify({ hookSpecificOutput: { hookEventName } }))
+    } else if (HOOKS_WITH_TOP_DECISION.includes(hookEventName)) {
+      // For hooks that use top-level decision, send empty object to allow
+      console.log(JSON.stringify({}))
     } else {
-      // For hooks like SessionEnd, SessionStart, etc. that don't need hookSpecificOutput
+      // For hooks that don't need hookSpecificOutput or decision
       // Return an empty object or minimal valid structure
       console.log(JSON.stringify({}))
     }
